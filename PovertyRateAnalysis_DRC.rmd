@@ -1,0 +1,206 @@
+---
+title: "Poverty Metrics Analysis in DRC"
+author: "Elvira Khwatenge"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(xfun)
+# Load the dataset
+data <- read.csv("hdx_hapi_poverty_rate_global.csv")
+
+```
+
+## Introduction
+In this report, we explore global poverty metrics, focusing on indicators such as the Multidimensional Poverty Index (MPI), headcount ratio, intensity of deprivation, vulnerability to poverty, and severe poverty levels using data cleaning, descriptive statistics, and visualization techniques to reveal trends, regional disparities, and correlations.
+
+```{r}
+# Clean data
+colnames(data) <- data[1, ]  # Use the first row as column headers
+data <- data[-1, ]  # Remove the first row now
+colnames(data) <- c(
+  "location_code", "has_hrp", "in_gho", "provider_admin1_name", 
+  "admin1_code", "admin1_name", "mpi", "headcount_ratio", 
+  "intensity_of_deprivation", "vulnerable_to_poverty", 
+  "in_severe_poverty", "reference_period_start", "reference_period_end"
+)
+numeric_cols <- c("mpi", "headcount_ratio", "intensity_of_deprivation", 
+                  "vulnerable_to_poverty", "in_severe_poverty")
+data[numeric_cols] <- lapply(data[numeric_cols], as.numeric)
+
+# Display structure
+str(data)
+
+# Summary statistics
+summary(data[numeric_cols])
+```
+
+
+```{r}
+library(ggplot2)
+
+# Histogram of MPI
+ggplot(data, aes(x = mpi)) +
+  geom_histogram(binwidth = 0.05, fill = "blue", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Distribution of MPI", x = "MPI", y = "Frequency")
+```
+
+## Trends
+
+
+```{r}
+# Convert dates to Date type
+data$reference_period_start <- as.Date(data$reference_period_start)
+data$reference_period_end <- as.Date(data$reference_period_end)
+
+# Line plot of MPI over time
+ggplot(data, aes(x = reference_period_start, y = mpi, color = admin1_name)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "MPI Trends Over Time", x = "Year", y = "MPI")
+
+
+```
+
+
+## MPI vs. Headcount Ratio
+
+```{r}
+# Scatter plot of MPI vs. Headcount Ratio
+ggplot(data, aes(x = mpi, y = headcount_ratio)) +
+  geom_point(alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "MPI vs Headcount Ratio", x = "MPI", y = "Headcount Ratio")
+```
+
+
+## Regional Comparison
+Compare poverty indicators (e.g., MPI, headcount ratio) across different regions (admin1_name).
+
+# Average MPI by Region
+```{r}
+# Average MPI by region
+library(dplyr)
+
+regional_mpi <- data %>%
+  group_by(admin1_name) %>%
+  summarize(avg_mpi = mean(mpi, na.rm = TRUE)) %>%
+  arrange(desc(avg_mpi))
+
+# Bar plot
+ggplot(regional_mpi, aes(x = reorder(admin1_name, -avg_mpi), y = avg_mpi)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  theme_minimal() +
+  labs(title = "Average MPI by Region", x = "Region", y = "Average MPI") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+## Poverty Trends Over Time
+Analyze how poverty indicators (e.g., mpi, headcount_ratio) evolve over time.
+
+# Headcount Ratio Over Time
+```{r}
+
+# Line plot of headcount ratio over time
+ggplot(data, aes(x = reference_period_start, y = headcount_ratio, color = admin1_name)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "Headcount Ratio Trends Over Time", x = "Year", y = "Headcount Ratio")
+```
+
+
+## Correlation Between Indicators
+Explore the relationship between poverty indicators, such as mpi, headcount_ratio, and intensity_of_deprivation.
+
+# Correlation Matrix
+```{r}
+
+# Correlation matrix of numeric variables
+library(corrplot)
+
+numeric_data <- data[numeric_cols]
+cor_matrix <- cor(numeric_data, use = "complete.obs")
+
+# Correlation plot
+corrplot(cor_matrix, method = "circle", type = "upper", tl.cex = 0.8)
+```
+
+
+## Severity Analysis
+Identify regions or time periods with severe poverty levels.
+
+Highlight Regions with Severe Poverty
+```{r}
+# Filter data for severe poverty
+severe_poverty <- data %>%
+  filter(in_severe_poverty > 50)  # Example threshold for severe poverty
+
+# Table of regions with severe poverty
+severe_poverty %>%
+  select(admin1_name, reference_period_start, in_severe_poverty) %>%
+  arrange(desc(in_severe_poverty))
+```
+
+## Vulnerable Populations
+Analyze the percentage of people vulnerable to poverty (vulnerable_to_poverty).
+## Vulnerability to Poverty by Region
+```{r}
+
+# Box plot for vulnerable populations by region
+ggplot(data, aes(x = admin1_name, y = vulnerable_to_poverty)) +
+  geom_boxplot(fill = "lightgreen", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Vulnerability to Poverty by Region", x = "Region", y = "Vulnerability (%)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+## Outlier Detection
+Detect extreme values for poverty metrics.
+
+```{r}
+
+# Boxplot for MPI to detect outliers
+ggplot(data, aes(x = "", y = mpi)) +
+  geom_boxplot(fill = "orange", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Outliers in MPI", x = "", y = "MPI")
+```
+
+## Combine Insights
+Generate an integrated dashboard with multiple visualizations using the flexdashboard or shiny package.
+
+```{r}
+
+# Example: Shiny Dashboard
+library(shiny)
+library(ggplot2)
+
+ui <- fluidPage(
+  titlePanel("Poverty Indicators Dashboard"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("indicator", "Select Indicator", choices = numeric_cols)
+    ),
+    mainPanel(
+      plotOutput("trendPlot")
+    )
+  )
+)
+
+server <- function(input, output) {
+  output$trendPlot <- renderPlot({
+    ggplot(data, aes(x = reference_period_start, y = !!sym(input$indicator), color = admin1_name)) +
+      geom_line() +
+      theme_minimal() +
+      labs(title = paste(input$indicator, "Trends Over Time"), x = "Year", y = input$indicator)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
