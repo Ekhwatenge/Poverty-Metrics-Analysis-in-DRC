@@ -9,18 +9,17 @@ This project aims to:
 4. Identify regions with severe poverty for targeted interventions.
 
 # Features
-Data Cleaning: Handles inconsistencies and prepares the data for analysis.
-Exploratory Data Analysis (EDA):
-Distribution analysis of MPI.
-Trends over time for key indicators.
-Regional comparisons of poverty metrics.
-Visualization: Includes histograms, line plots, bar charts, and box plots.
-Correlation Analysis: Examines relationships between poverty metrics.
-Interactive Dashboard: (Optional) Shiny-based app for dynamic exploration of indicators.
+1. Data Cleaning: Handles inconsistencies and prepares the data for analysis.
+2. Exploratory Data Analysis (EDA):
+3. Distribution analysis of MPI.
+4. Trends over time for key indicators.
+5. Regional comparisons of poverty metrics.
+6. Visualization: Includes histograms, line plots, bar charts, and box plots.
+7. Correlation Analysis: Examines relationships between poverty metrics.
+8. Interactive Dashboard: (Optional) Shiny-based app for dynamic exploration of indicators.
 
 # Installation
 To replicate this analysis, follow these steps:
-
 Clone this repository:
 git clone https://github.com/YourUsername/Poverty-Metrics-Analysis.git
 cd Poverty-Metrics-Analysis
@@ -32,11 +31,11 @@ Run the RMarkdown file to generate the HTML report.
 
 # Data
 The dataset used in this project contains poverty-related metrics across different regions and periods. The indicators analyzed include:
-MPI (Multidimensional Poverty Index): Measures the intensity of poverty.
-Headcount Ratio: Proportion of the population living in poverty.
-Intensity of Deprivation: Average deprivation experienced by the poor.
-Vulnerable to Poverty: Percentage of the population at risk of falling into poverty.
-In Severe Poverty: Percentage of the population experiencing severe poverty.
+1. MPI (Multidimensional Poverty Index): Measures the intensity of poverty.
+2. Headcount Ratio: Proportion of the population living in poverty.
+3. Intensity of Deprivation: Average deprivation experienced by the poor.
+4. Vulnerable to Poverty: Percentage of the population at risk of falling into poverty.
+5. In Severe Poverty: Percentage of the population experiencing severe poverty.
 
 # Visualizations
 1. Distribution of MPI
