@@ -3,10 +3,10 @@ This project analyzes global poverty metrics using R. The focus is on understand
 
 # Project Overview
 This project aims to:
-Clean and preprocess poverty data for analysis.
-Provide insights into poverty trends and regional disparities.
-Explore relationships between key poverty indicators.
-Identify regions with severe poverty for targeted interventions.
+1. Clean and preprocess poverty data for analysis.
+2. Provide insights into poverty trends and regional disparities.
+3. Explore relationships between key poverty indicators.
+4. Identify regions with severe poverty for targeted interventions.
 
 # Features
 Data Cleaning: Handles inconsistencies and prepares the data for analysis.
